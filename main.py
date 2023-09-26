@@ -10,8 +10,11 @@ import matplotlib.pyplot as plt
 dataset = pd.read_csv('./Dataset/drug_consumption_cleaned.csv')
 
 ##List feautures. Currently looking at just Cannabis vs personality traits.
-features = ['Neuroticism (N-Score)','Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)','Conscientiousness (C-Score)','Impulsiveness (BIS-11)','Sensation (SS)']
+features = ['Neuroticism (N-Score)', 'Extroversion (E-Score)', 'Openness (O-Score)',
+            'Agreeableness (A-Score)','Conscientiousness (C-Score)','Impulsiveness (BIS-11)',
+            'Sensation (SS)']
 target = ['Cannabis']
+
 x = StandardScaler().fit_transform(dataset.loc[:,features].values)
 y = StandardScaler().fit_transform(dataset.loc[:,target].values)
 
@@ -28,7 +31,6 @@ print(variance)
 
 
 #Plot
-
 plt.figure(figsize=(10,10))
 plt.xticks(fontsize=12)
 plt.yticks(fontsize=14)

@@ -30,7 +30,7 @@ boxplot(X)
 xticks(range(1,len(features)+1),features)
 ylabel('points')
 title('Drug addiction  - boxplot')
-show()
+#show()
 print('----- ---------------------- ------')
 
 #question 3.2 finding if any of the attributes are normally distributed
@@ -49,7 +49,7 @@ subplot(1,3,3)
 hist(X_normal_sens, bins=nbins, edgecolor='black')
 xlabel('Sensation (SS)')
 ylabel('Count')
-show()
+#show()
 print('----- ---------------------- ------')
 
 
@@ -69,7 +69,7 @@ ylim(-5,30)
 xlabel('Sensation (SS)')
 ylabel('Impulsiveness (BIS-11)')
 title('Scatter plot Sensation vs Impulsiveness ')
-show()
+#show()
 print('----- ---------------------- ------')
 
 #PCA
@@ -79,7 +79,8 @@ one_hot_encoding = pd.get_dummies(nominal_cols)
 new_dataset =  dataset.drop(nominal_col_names+target,axis=1)
 new_dataset = new_dataset.join(one_hot_encoding)
 new_dataset.to_csv('processed_dataset.csv')
-X = new_dataset.to_numpy();
+norm_data = pd.read_csv("normalised_data.csv")
+X = norm_data.to_numpy()
 # Subtract mean value from data
 Y = X - np.ones((len(y),1))*X.mean(axis=0)
 
@@ -119,6 +120,7 @@ print(y.flatten())
 print(y.shape)
 for c in range(y.max()):
     # select indices belonging to class c:
+    
     class_mask = y==c
     plot(Z[class_mask,i], Z[class_mask,j], 'o', alpha=.5)
 legend(classNames)

@@ -76,6 +76,7 @@ print('----- ---------------------- ------')
 print('------------------ PCA ----------------')
 nominal_cols = dataset[nominal_col_names].copy(deep=True)
 one_hot_encoding = pd.get_dummies(nominal_cols)
+one_hot_encoding.to_csv('processed_dataset.csv')
 new_dataset =  dataset.drop(nominal_col_names+target,axis=1)
 new_dataset = new_dataset.join(one_hot_encoding)
 X = new_dataset.to_numpy();

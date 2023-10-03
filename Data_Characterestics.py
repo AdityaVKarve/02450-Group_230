@@ -27,29 +27,17 @@ print("______________________________")
 
 
 #Check dataset attributes
-
-#Check if personality traits (N-Score, E-Score etc are normally distributed)
-
-#First test: Shapiro Wilkes test
-#Second test, plot histogram
-
-var = stats.shapiro(dataset['Neuroticism (N-Score)'])
-print("Shapiro-Wilkes test score for Neuroticism:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Extroversion (E-Score)'])
-print("Shapiro-Wilkes test score for Extroversion:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Openness (O-Score)'])
-print("Shapiro-Wilkes test score for Openness:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Agreeableness (A-Score)'])
-print("Shapiro-Wilkes test score for Agreeableness:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Conscientiousness (C-Score)'])
-print("Shapiro-Wilkes test score for Conscientiousness:{}".format(var.pvalue))
-print("______________________________")
+for c in dataset.columns:
+    print(c)
+    print("_____________________________________________")
+    print("Mean:{}".format(np.mean(dataset[c])))
+    print("Median:{}".format(np.median(dataset[c])))
+    print("Mode:{}".format(stats.mode(dataset[c]).mode[0]))
+    print("Standard Deviation:{}".format(np.std(dataset[c])))
+    print("_____________________________________________")
 
 
+#Plot personality traits-> The 5 continuous attributes
 plt.subplot(211)
 n_norm_x, n_norm_y = get_normal_plot(dataset['Neuroticism (N-Score)'])
 e_norm_x, e_norm_y = get_normal_plot(dataset['Extroversion (E-Score)'])
@@ -83,14 +71,7 @@ plt.xlabel('Conscientiousness (C-Score)')
 plt.ylabel('Probability')
 plt.show()
 
-var = stats.shapiro(dataset['Impulsiveness (BIS-11)'])
-print("Shapiro-Wilkes test score for Impulsiveness:{}".format(var.pvalue))
-print("______________________________")
-
-var = stats.shapiro(dataset['Sensation (SS)'])
-print("Shapiro-Wilkes test score for Sensation:{}".format(var.pvalue))
-print("______________________________")
-
+#Plot personality traits-> The 2 discrete attributes
 i_x, i_y, i_count = get_normal_hist(dataset['Impulsiveness (BIS-11)'])
 s_x, s_y, s_count = get_normal_hist(dataset['Sensation (SS)'])
 
@@ -105,58 +86,6 @@ plt.xlabel('Sensation (SS)')
 plt.ylabel('Count')
 plt.show()
 
-#### SW test for drug abuse
-var = stats.shapiro(dataset['Alcohol'])
-print("Shapiro-Wilkes test score for Alcohol:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Amphetamines'])
-print("Shapiro-Wilkes test score for Amphetamines:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Amyl nitrites'])
-print("Shapiro-Wilkes test score for Amyl nitrites:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Benzos'])
-print("Shapiro-Wilkes test score for Benzos:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Chocolate'])
-print("Shapiro-Wilkes test score for Chocolate:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Cocaine'])
-print("Shapiro-Wilkes test score for Cocaine:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Crack'])
-print("Shapiro-Wilkes test score for Crack:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Ecstasy'])
-print("Shapiro-Wilkes test score for Ecstasy:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Heroin'])
-print("Shapiro-Wilkes test score for Heroin:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Ketamine'])
-print("Shapiro-Wilkes test score for Ketamine:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Legal Highs'])
-print("Shapiro-Wilkes test score for Legal Highs:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['LSD'])
-print("Shapiro-Wilkes test score for LSD:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Methamphetamine'])
-print("Shapiro-Wilkes test score for Methamphetamine:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Magic Mushrooms'])
-print("Shapiro-Wilkes test score for Magic Mushrooms:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Nicotine'])
-print("Shapiro-Wilkes test score for Nicotine:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Semer'])
-print("Shapiro-Wilkes test score for Semer:{}".format(var.pvalue))
-print("______________________________")
-var = stats.shapiro(dataset['Inhalants/Volatiles'])
-print("Shapiro-Wilkes test score for Inhalants/Volatiles:{}".format(var.pvalue))
-print("______________________________")
 
 #Plot drug abuse-> Alcohol to Chocolate
 al_x, al_y, al_count = get_normal_hist(dataset['Alcohol'])
@@ -277,4 +206,3 @@ plt.ylabel('Count')
 
 plt.show()
 
-correlation_dataset = dataset[]

@@ -1,8 +1,10 @@
 ''' solution for question 3 '''
 import pandas as pd
 import numpy as np
-from matplotlib.pyplot import boxplot, xticks, ylabel, title, show, hist, figure, subplot, xlabel, ylabel, scatter, xlim, ylim, plot, legend, grid,subplots
+from matplotlib.pyplot import boxplot, xticks, ylabel, title, show, hist, figure, \
+subplot, xlabel, ylabel, scatter, xlim, ylim, plot, legend, grid,subplots,imshow, colorbar, yticks,annotate
 from scipy.linalg import svd
+from sklearn.preprocessing import LabelEncoder
 
 ##Load dataset
 dataset = pd.read_csv('./Dataset/drug_consumption_cleaned.csv')
@@ -12,7 +14,7 @@ features = ['Neuroticism (N-Score)', 'Extroversion (E-Score)', 'Openness (O-Scor
             'Agreeableness (A-Score)','Conscientiousness (C-Score)','Impulsiveness (BIS-11)',
             'Sensation (SS)']
 target = ['Cannabis']
-nominal_col_names = ['Age','Gender','Country','Ethnicity','Education']
+nominal_col_names = ['Age','Gender','Country','Ethnicity']
 
 
 
@@ -30,32 +32,58 @@ boxplot(X)
 xticks(range(1,len(features)+1),features)
 ylabel('points')
 title('Drug addiction  - boxplot')
-#show()
+show()
 print('----- ---------------------- ------')
 
 #question 3.2 finding if any of the attributes are normally distributed
 print('----- queston 3.2 normal dist or not ------')
 X_normal_neuro = dataset['Neuroticism (N-Score)'].to_numpy()
-nbins = 5
+nbins = 10
 X_normal_sens = dataset['Sensation (SS)'].to_numpy()
 # Plot the samples and histogram
 figure(figsize=(12,4))
 title('Normal distribution')
 subplot(1,2,1)
-hist(X_normal_neuro , bins=nbins, edgecolor='black')
+counts, bins = np.histogram(X_normal_neuro, density=True, bins=nbins)
+plot(bins[:-1],counts)
+hist(X_normal_neuro , bins=nbins, edgecolor='black', density=True)
 xlabel('Neuroticism (N-Score)')
-ylabel('Count')
+ylabel('Density')
 subplot(1,3,3)
-hist(X_normal_sens, bins=nbins, edgecolor='black')
+counts, bins = np.histogram(X_normal_sens, density=True, bins=nbins)
+plot(bins[:-1],counts)
+hist(X_normal_sens, bins=nbins, edgecolor='black',density=True)
 xlabel('Sensation (SS)')
-ylabel('Count')
-#show()
+ylabel('Density')
+show()
 print('----- ---------------------- ------')
 
 
 # correlation study
 print('----- queston 3.3 correlation matrix ------')
 corr_df =  dataset[features+target].corr('pearson', numeric_only=True)
+imshow(corr_df)
+for i in range(7):
+    for j in range(7):
+        annotate(str(round(corr_df.values[i][j], 2)),\
+                     xy=(j+0.25, i+0.7),
+                     ha='center', va='center', color='white')
+# Add colorbar
+cbar = colorbar(ticks=[0, 0.5, 1])
+cbar.ax.set_yticklabels(['Low', 'Medium', 'High'])
+ 
+# Set plot title and axis labels
+title("Correlation Matrix Of The Dataset")
+xlabel("Features")
+ylabel("Features")
+ 
+# Set tick labels
+xticks(range(len(corr_df.columns)),\
+           corr_df.columns, rotation=90)
+yticks(range(len(corr_df.columns)),
+           corr_df.columns)
+show()
+
 print(corr_df)
 corr_df_max = corr_df[corr_df!=1].max(axis=0)
 corr_df_min = corr_df[corr_df!=1].min(axis=0)
@@ -69,18 +97,26 @@ ylim(-5,30)
 xlabel('Sensation (SS)')
 ylabel('Impulsiveness (BIS-11)')
 title('Scatter plot Sensation vs Impulsiveness ')
-#show()
+show()
 print('----- ---------------------- ------')
 
 #PCA
 print('------------------ PCA ----------------')
+# One hot encoding applied to nominal columns 
 nominal_cols = dataset[nominal_col_names].copy(deep=True)
 one_hot_encoding = pd.get_dummies(nominal_cols)
 new_dataset =  dataset.drop(nominal_col_names+target,axis=1)
 new_dataset = new_dataset.join(one_hot_encoding)
-new_dataset.to_csv('processed_dataset.csv')
-norm_data = pd.read_csv("normalised_data.csv")
-X = norm_data.to_numpy()
+
+# Applying label encoding to ordinal columns 
+label_encoder = LabelEncoder()
+new_dataset['Education'] = label_encoder.fit_transform(dataset['Education'])
+
+# Applying normalization
+norm_dataset = new_dataset.apply(lambda iterator: ((iterator.max() - iterator)/(iterator.max() - iterator.min())).round(2))
+norm_dataset.to_csv('./dataset/normalised_data.csv')
+
+X = norm_dataset.to_numpy()
 # Subtract mean value from data
 Y = X - np.ones((len(y),1))*X.mean(axis=0)
 

@@ -6,15 +6,15 @@ import pandas as pd
 from pandas import DataFrame
 dataset = pd.read_csv('./Dataset/normalised_data.csv')
 
-predictors = ['Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)','Conscientiousness (C-Score)','Impulsiveness (BIS-11)','Sensation (SS)','Age_18-24','Age_25-34','Age_35-44','Age_45-54','Age_55-64','Age_65+','Gender_F','Gender_M','Alcohol_Frequent','Amphetamines_Frequent','Amyl_Frequent','Benzos_Frequent','Caffeine_Frequent','Chocolate_Frequent','Cocaine_Frequent','Crack_Frequent','Ecstasy_Frequent','Heroin_Frequent','Ketamine_Frequent','Legal_Highs_Frequent','LSD_Frequent','Methamphetamine_Frequent','Magic_Mushrooms_Frequent','Nicotine_Frequent','Semer_Frequent','Inhalants_Frequent']
-predicates = ['Neuroticism (N-Score)']
+predictors = ['Neuroticism (N-Score)','Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)']
+predicates = ['Conscientiousness (C-Score)']
 total_set = predictors + predicates
 dataframe_relevant = dataset[total_set]
 
 
 import seaborn as sns
 import matplotlib.pyplot as plt
-sns.heatmap(dataframe_relevant.corr(), cmap="BuGn_r")
+
 #plt.show()
 
 corr_df = dataframe_relevant.corr()
@@ -51,3 +51,37 @@ for i in output_df.columns:
 
 
 
+#trying ridge regression
+print("Attempting ridge regression:")
+
+alpha_val = 1e-5
+best_alpha = -1
+base_r2 = -123213213
+base_mse = 123123123
+mse_plot = []
+alpha_plot = []
+for i in range(10):
+    print("Current alpha: {}".format(alpha_val))
+    reg = linear_model.Ridge(alpha=alpha_val)
+    reg.fit(X_train,y_train)
+
+    y_pred = reg.predict(X_test)
+
+    output_df = pd.DataFrame(y_pred, columns=predicates)
+
+    mse = mean_squared_error(output_df,y_test)
+    r_2 = r2_score(output_df,y_test)
+    if r_2 > base_r2:
+        base_r2 = r_2
+        base_mse = mse
+        best_alpha = alpha_val
+    mse_plot.append(mse)
+    alpha_plot.append(str(alpha_val))
+    
+    alpha_val *= 10
+        
+print("Best val of alpha:{}\nR_2:{}\nMSE:{}".format(best_alpha,base_r2,base_mse))
+plt.plot(alpha_plot, mse_plot)
+plt.xlabel("Alpha")
+plt.ylabel("MSE")
+plt.show()

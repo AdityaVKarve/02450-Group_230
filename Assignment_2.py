@@ -1,86 +1,53 @@
 #First, I'll split the dataset into training and testing sets. 
-#I'll split it in a 70-30 ratio
+
 
 #Load dataset
 import pandas as pd
+from pandas import DataFrame
 dataset = pd.read_csv('./Dataset/normalised_data.csv')
-#Check dataset
-print(dataset.describe())
 
-#Split into train and test sets
-from sklearn.model_selection import train_test_split
-train, test = train_test_split(dataset, test_size = 0.2)
-#Training values
-training_predictors = train.loc[:,['Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)','Conscientiousness (C-Score)']]
-training_target = train.loc[:,['Neuroticism (N-Score)']]
-#Testing values
-testing_predictors = test.loc[:,['Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)','Conscientiousness (C-Score)']]
-testing_target = test.loc[:,['Neuroticism (N-Score)']]
+predictors = ['Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)','Conscientiousness (C-Score)','Impulsiveness (BIS-11)','Sensation (SS)','Age_18-24','Age_25-34','Age_35-44','Age_45-54','Age_55-64','Age_65+','Gender_F','Gender_M','Alcohol_Frequent','Amphetamines_Frequent','Amyl_Frequent','Benzos_Frequent','Caffeine_Frequent','Chocolate_Frequent','Cocaine_Frequent','Crack_Frequent','Ecstasy_Frequent','Heroin_Frequent','Ketamine_Frequent','Legal_Highs_Frequent','LSD_Frequent','Methamphetamine_Frequent','Magic_Mushrooms_Frequent','Nicotine_Frequent','Semer_Frequent','Inhalants_Frequent']
+predicates = ['Neuroticism (N-Score)']
+total_set = predictors + predicates
+dataframe_relevant = dataset[total_set]
 
 
-#First, using regular linear regression and getting variance
-from sklearn.linear_model import LinearRegression
-linreg = LinearRegression()
-linreg.fit(training_predictors, training_target)
-model_output = linreg.predict(testing_predictors)
-
-#Getting R-squared, MSE, RMS error
-from sklearn.metrics import r2_score
-from sklearn import metrics
-
-r_squared = r2_score(testing_target, model_output)
-mse = metrics.mean_squared_error(testing_target, model_output)
-
-print("Simple linear regression summary:\nMSE:{}\nR_Squared:{}".format(mse,r_squared))
-
-#Using ridge regression
-from sklearn.linear_model import Ridge
-
-alpha_vals = []
-start_val = 1e-5
-for i in range(10):
-    alpha_vals.append(start_val)
-    start_val*=10
-
-#Get the right alpha
-import sys
-min_mse = sys.maxsize
-min_mse_alpha = -1
-mse_plot = []
-alpha_plot = []
-for i in range(len(alpha_vals)):
-    ridgereg = Ridge(alpha=alpha_vals[i])
-    ridgereg.fit(training_predictors, training_target)
-    y_pred = ridgereg.predict(testing_predictors)
-    mse = metrics.mean_squared_error(testing_target,y_pred)
-    mse_plot.append(mse)
-    alpha_plot.append(str(alpha_vals[i]))
-    if mse < min_mse:
-        min_mse = mse
-        min_mse_alpha = alpha_vals[i]
-
-#plotting MSE vs alpha
+import seaborn as sns
 import matplotlib.pyplot as plt
+sns.heatmap(dataframe_relevant.corr(), cmap="BuGn_r")
+#plt.show()
 
-plt.plot(alpha_plot, mse_plot, label = 'MSE vs alpha')
-plt.xlabel('Alpha')
-plt.ylabel('MSE')
-plt.show()
+corr_df = dataframe_relevant.corr()
+corr_df.to_csv('Correlation_matrix.csv')
 
-print("Minimum MSE recorded using ridge regression:{}.".format(min_mse))
-print("Alpha for minimum MSE:{}".format(min_mse_alpha))
 
-print("Performing k-fold cross validation with k = 10")
-avg_mse = 0
-for i in range(10):
-    train, test = train_test_split(dataset, test_size = 0.1)
-    #Testing values
-    testing_predictors = test.loc[:,['Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)','Conscientiousness (C-Score)']]
-    testing_target = test.loc[:,['Neuroticism (N-Score)']]
-    y_pred_ridge = ridgereg.predict(testing_predictors)
-    mse_ridge = metrics.mean_squared_error(testing_target,y_pred_ridge)
-    y_pred_slr = linreg.predict(testing_predictors)
-    mse_slr = metrics.mean_squared_error(testing_target,y_pred_slr)
-    avg_mse += mse_ridge
+#Splitting data into training and test splits
 
-print("Average MSE for k=10 fold cross validation:{}".format(avg_mse/10))
+predictor_total_set = dataframe_relevant[predictors]
+predicates_total_set = dataframe_relevant[predicates]
+
+# split into train test sets
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(predictor_total_set, predicates_total_set, test_size=0.33)
+
+#Simple linear regression
+print("Attempting simple linear regression:")
+from sklearn import linear_model
+
+reg = linear_model.LinearRegression()
+reg.fit(X_train,y_train)
+
+y_pred = reg.predict(X_test)
+
+output_df = pd.DataFrame(y_pred, columns=predicates)
+
+#Get Rsq and MSE for SLR 
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score 
+for i in output_df.columns:
+    print("MSE for column {}: {}".format(i,mean_squared_error(output_df[i],y_test[i])))
+    print("R^2 for column {}: {}".format(i,r2_score(output_df[i],y_test[i])))
+    print("______________________________")
+
+
+

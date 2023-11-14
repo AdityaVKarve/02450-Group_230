@@ -1,6 +1,6 @@
 import pandas as pd
 
-dataset = pd.read_csv('./Dataset/normalised_data.csv')
+dataset = pd.read_csv('../Dataset/normalised_data.csv')
 
 predictors = ['Neuroticism (N-Score)', 'Extroversion (E-Score)', 'Openness (O-Score)', 'Agreeableness (A-Score)',
               'Conscientiousness (C-Score)', 'Impulsiveness (BIS-11)', 'Sensation (SS)',

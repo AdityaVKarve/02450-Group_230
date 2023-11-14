@@ -11,8 +11,8 @@ from toolbox_02450 import rlr_validate
 from reg_net import find_opt_h
 import torch
 
-predictors = ['Conscientiousness (C-Score)','Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)']
-predicates = ['Neuroticism (N-Score)']
+predictors = ['Neuroticism (N-Score)','Extroversion (E-Score)','Openness (O-Score)','Agreeableness (A-Score)']
+predicates = ['Conscientiousness (C-Score)']
 
 mat_data = pd.read_csv('../Dataset/normalised_data.csv')
 

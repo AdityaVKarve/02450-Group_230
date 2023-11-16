@@ -1,7 +1,6 @@
 import pandas as pd
 
 dataset = pd.read_csv('../Dataset/normalised_data.csv')
-
 predictors = ['Neuroticism (N-Score)', 'Extroversion (E-Score)', 'Openness (O-Score)', 'Agreeableness (A-Score)',
               'Conscientiousness (C-Score)', 'Impulsiveness (BIS-11)', 'Sensation (SS)',
               'Age_18-24', 'Age_25-34', 'Age_35-44', 'Age_45-54', 'Age_55-64', 'Age_65+',
@@ -13,3 +12,8 @@ predictors = ['Neuroticism (N-Score)', 'Extroversion (E-Score)', 'Openness (O-Sc
 predicates = ['Nicotine']
 total_set = predictors + predicates
 df = dataset[total_set]
+df = df.head(int(len(df)*0.9))
+mcnemra_test_set = df.tail(int(len(df)*0.1))
+mcnemra_train_set = mcnemra_test_set[predictors]
+mcnemra_test_set = mcnemra_test_set[predicates]
+
